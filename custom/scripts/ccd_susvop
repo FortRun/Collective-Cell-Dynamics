@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Help:Begin
+# Brief: Computes susceptibility corresponding to the Vicsek order parameter
+# Usage: ccd_susvop <path to analysis dump file> [<begin frame>] [<end frame>]
+# Help:End
+
+while getopts :h opt; do
+    case "${opt}" in
+        h) helpdoc ccd_susvop ; exit;;
+        *) echo "Provided option not supported. See usage: ccd susvop -h" >&2; exit 1;;
+    esac
+done
+
+
+[[ -f "${1}" ]] || { echo 'Pass path to analysis dump file as first argument. See usage: ccd susvop -h'; exit 1;}
+gnuplot -e "stats [${2}:${3}] '${1}' using 'frame':'vicsekop' nooutput; print STATS_ssd_y**2"
