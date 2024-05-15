@@ -1,0 +1,12 @@
+# This sample runman job launches several runs (run.sh) for phase space exploration varying parameters X and Y
+# Each individual run is given its unique RUNMAN_ARRAY_INDEX
+# Runman also suffixes the given stdout path with the array index, for storing stdout of the corresponding elemental job
+
+cmd="./run.sh"
+ncpu=2 # Number of CPU cores/threads required for each run.sh
+wclock=4h # Max. wall clock time each run.sh instance can run: Floating point with suffix s(secs), m(mins), h(hrs), d(days)
+comment="Phase space exploration by varying parameters X and Y"
+stdout="stdout.log"
+Xpoints= # Total number of paramX points
+Ypoints= # Total number of paramY points
+array="0-$((Xpoints * Ypoints - 1)):1"
