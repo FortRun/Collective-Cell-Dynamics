@@ -16,7 +16,7 @@ program ccd_analysis
     character(len=:), allocatable :: metadata_fname, opt_arg
     integer :: metadata_fname_length, opt_arg_len, exitcode
     integer :: ring, rec_index, begin_rec, end_rec
-    double precision :: msd, alpha2, shapeind, hexop1, hexop2, vicsekop, areafrac, tension, nemop
+    double precision :: msd, alpha2, Q, Q_ref, shapeind, hexop1, hexop2, vicsekop, areafrac, tension, nemop
     double precision :: cell_sd_, cell_area, cell_perim, sum_area, cell_tension
     double precision :: cell_vicsekop_x, cell_vicsekop_y, vicsekop_x, vicsekop_y
     double precision :: cell_major_axis(2), cell_minor_axis(2), cell_nemop_cos_theta
@@ -53,6 +53,8 @@ program ccd_analysis
 
         msd = 0.d0
         alpha2 = 0.d0
+        Q = 0.d0
+        Q_ref = dsqrt((box*box)/nrings)
         shapeind = 0.d0
         vicsekop_x = 0.d0
         vicsekop_y = 0.d0
@@ -64,6 +66,7 @@ program ccd_analysis
             cell_sd_ = cell_sd(ring)
             msd = msd + cell_sd_
             alpha2 = alpha2 + cell_sd_*cell_sd_
+            Q = Q + sign(0.5d0, Q_ref - dsqrt(cell_sd_))
 
             call cell_perimetry(ring, k, l0, cell_area, cell_perim, cell_tension)
             sum_area = sum_area + cell_area
@@ -83,6 +86,9 @@ program ccd_analysis
         ! Non-gaussian parameter: M. Chiang and D. Marenduzzo, EPL, 116, 10 2016
         alpha2 = alpha2*nrings/(2*msd*msd) - 1.d0
         msd = msd/nrings
+        ! Self-Overlap Q(t): Eq.(A2)-(A3) Sadhukhan, Nandi, Phys. Rev. E 103, 062403 (2021)
+        ! Q_ref above is inspired from Methods section of Park et al., Nat. Mat. 14, 1040 (2015)
+        Q = Q/nrings + 0.5d0
         shapeind = shapeind/nrings
         areafrac = min((sum_area + bead_area)/(box*box), 1.d0)
         tension = tension/nrings
@@ -99,7 +105,7 @@ program ccd_analysis
         hexop2 = abs(sum(hop))/nrings
 
         call dump(rec_index*traj_dump_int, timepoint, &
-                  msd, alpha2, shapeind, hexop1, hexop2, vicsekop, areafrac, tension, nemop, poten/nrings)
+                  msd, alpha2, Q, shapeind, hexop1, hexop2, vicsekop, areafrac, tension, nemop, poten/nrings)
     end do traj_records
 
 end program ccd_analysis
