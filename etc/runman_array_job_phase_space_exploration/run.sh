@@ -22,11 +22,11 @@ paramX=$(echo "${paramX_beg} + ${paramX_stride}*${Xindex}" | bc -l)
 paramY=$(echo "${paramY_beg} + ${paramY_stride}*${Yindex}" | bc -l)
 
 # Path to input parameters file containing the parameters constant throughout the phase space
-CCD_PARAMS_PATH="${PWD}/common_params.in"
+export CCD_PARAMS_PATH="${PWD}/common_params.in"
 
 # Create and change to own sub-directory that shall contain the run results
 rundir="${Xindex}_${Yindex}"
-mkdir "${rundir}"
+mkdir -p "${rundir}"
 cd "${rundir}"
 
 # Redirect stdout and stderr to specific log files within rundir
