@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+# Help:Begin
+# Brief: Promptly produces basic snapshot from checkpoint (.cpt) file
+# Help:End
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Create config.snapshot from state.cpt
+#TODO: import os.system throws ModuleNotFoundError
+import os
+os.system("ccd_cpt_to_xy --snapshot")
+
+# Read in data
+with open('config.snapshot', 'r') as f:
+    next(f) # Skip 'Title' header
+    box = float(next(f).split()[1]) # Access box length from 'Boxlen' header
+    # Read position data after skipping the column headers.
+    # Sentinels ignored, as they are commented
+    data = np.loadtxt(f, skiprows=2)
+
+# Set up bounding box
+fig, ax = plt.subplots()
+ax.axis([0, box, 0, box])
+
+# Process data to isolate beads specific to any given cell
+vals, ids, counts = np.unique(data[:,2], return_index=True, return_counts=True)
+
+# Looping over cells
+for cell_id, start_idx, num in np.column_stack([vals, ids, counts]):
+    # Bead coordinates array[[X, Y],...] for cell = cell_id
+    beads = data[int(start_idx):int(start_idx + num), 0:2]
+    # How many sections when folding into primary simulation box
+    secs = np.unique(beads//box, axis=0)
+    for sec in secs:
+        pts = beads - sec*box
+        ax.fill(pts[:,0], pts[:,1], 'slategrey')
+        ax.plot(pts[:,0], pts[:,1], linewidth=1, color='k')
+
+fig.tight_layout()
+plt.show()

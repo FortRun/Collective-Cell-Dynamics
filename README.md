@@ -13,7 +13,7 @@ Work in progress. Check [TODO](#TODO) list below.
 - [fortdepend](https://github.com/ZedThree/fort_depend.py) or its [fork](https://github.com/PhyBi/fortdepend) for generating dependencies during build. For Ubuntu 18.04, you may also have to install *importlib-metadata* with: `pip3 install importlib.metadata`
 - [bash](https://command-not-found.com/bash) because we suck at writing fully POSIX-compliant shell scripts
 - [pv](https://command-not-found.com/pv) for showing real-time progress bar
-- [gnuplot](https://command-not-found.com/gnuplot) for visualization
+- [gnuplot](https://command-not-found.com/gnuplot), [numpy](https://numpy.org/install/), [matplotlib](https://matplotlib.org/stable/install/index.html) for visualization
 - [xz](https://command-not-found.com/xz) for trajectory compression
 - [ffmpeg](https://command-not-found.com/ffmpeg) for movie generation
 - [jq](https://command-not-found.com/jq), [curl](https://command-not-found.com/curl) and [sponge](https://command-not-found.com/sponge) for quotes
@@ -62,6 +62,9 @@ ccd init
 
 # Run
 ccd run > 'metadata.txt' 2> 'logfile.txt'
+
+# Basic visualization of checkpoint
+ccd snapshot
 
 # State/Checkpoint(state.cpt) to XY dump(config.xy)
 ccd cpt_to_xy

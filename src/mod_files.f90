@@ -195,7 +195,12 @@ contains
         final_cpt_hash = sha1(cpt_fname)
     end subroutine cpt_write
 
-    ! Dumps xy file for any frame/timestep to be consumed by third party apps like gnuplot
+    ! Dumps xy file for any frame/timestep to be consumed by third party apps
+    ! File structure: Designed for easy parsing by gnuplot/numpy/sed
+    !! - cells are dumped as blocks separated by blanks for visual aid
+    !! - blocks have commented sentinels to aid parsing. Sentinels contain corresponding block/cell number
+    !! - each row contains single bead info, viz. its unwrapped coordinates and id of the cell it belongs to
+    !! Note: The above structure does not require all cells to have the same number of beads
     ! This routine is threadsafe provided different threads use different `fname`s
     ! x and y are passed as arguments to aid threadsafety
     subroutine xy_dump(fname, boxlen, x, y, title)
@@ -210,16 +215,16 @@ contains
         if (present(title)) write (fd, '(a,1x,a)') '#Title:', title
         write (fd, '(a,1x,es23.16)') '#Box:', boxlen
         write (fd, '(a)') '#Column headers:'
-        write (fd, '(a,4x,a)') 'x', 'y'
+        write (fd, '(a,2(4x,a))') 'x', 'y', 'cell_id'
 
         do l = 1, size(x, 2)
             write (fd, '(/)') ! Two consecutive blank records for separating datasets, each containing single cell info
-            write (fd, '(a,1x,i0)') '#Cell:', l
+            write (fd, '(a,1x,i0)') '#Cell:', l ! Block beginning sentinel containing cell id
             do i = 1, size(x, 1)
-                ! Output folded coordinates
-                write (fd, '(es23.16,1x,es23.16)') modulo(x(i, l), boxlen), modulo(y(i, l), boxlen)
+                ! Bead info: unfolded coordinates, cell id
+                write (fd, '(es23.16,1x,es23.16,1x,i0)') x(i, l), y(i, l), l
             end do
-            write (fd, '(a,1x,i0)') '#End_Cell:', l
+            write (fd, '(a,1x,i0)') '#End_Cell:', l ! Block ending sentinel containing cell id
         end do
         close (fd, status='keep')
     end subroutine xy_dump
