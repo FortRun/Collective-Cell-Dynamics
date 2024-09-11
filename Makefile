@@ -35,13 +35,22 @@ else ifeq ($(FC), ifort)
   ifdef OMP
     FF += -qopenmp
   endif
+else ifeq ($(FC), ifx)
+  ifdef DEBUG
+    FF += -march=native -static -O0 -auto -fpe0 -g -traceback -warn
+  else
+    FF += -march=native -O3 -static -fp-model fast -auto -w
+  endif
+  ifdef OMP
+    FF += -qopenmp
+  endif
 endif
 
 # Linker and linker Flags
 LD := $(FC)
 ifeq ($(LD), gfortran)
   LF += -fopenmp
-else ifeq ($(LD), ifort)
+else ifneq (, $(filter $(LD), ifort ifx))
   LF += -qopenmp
 endif
 
@@ -61,7 +70,7 @@ OBJS := $(addprefix $(BUILD_DIR)/, $(addsuffix .o, $(basename $(notdir $(SRCS)))
 IP := $(BUILD_DIR)
 ifeq ($(FC), gfortran)
   FF += -J $(IP)
-else ifeq ($(FC), ifort)
+else ifneq (, $(filter $(FC), ifort ifx))
   FF += -module $(IP)
 endif 
 

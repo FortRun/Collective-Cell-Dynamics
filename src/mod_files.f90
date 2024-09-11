@@ -38,7 +38,7 @@ contains
 
         inquire (iolength=reclen) timepoint, compressed_fp_for_io, ring_nb_io, real(poten)
         open (newunit=traj_fd, file=traj_fname, access='direct', recl=reclen, form='unformatted', &
-              status=old_or_replace, asynchronous='yes', action=read_or_write, iostat=io_stat)
+              status=old_or_replace, asynchronous='no', action=read_or_write, iostat=io_stat)
         if (io_stat /= 0) error stop 'Fatal: Problem with opening '//traj_fname
     end subroutine open_traj
 

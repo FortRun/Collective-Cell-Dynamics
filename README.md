@@ -9,7 +9,7 @@ https://github.com/PhyBi/Collective-Cell-Dynamics/assets/73181168/55df1eca-e339-
 Work in progress. Check [TODO](#TODO) list below.
 
 # Dependencies
-- [gfortran](https://command-not-found.com/gfortran) or [ifort](https://gist.github.com/SomajitDey/aeb6eb4c8083185e06800e1ece4be1bd)(recommended). Note: ifort is free now, doesn't require a license anymore.
+- [gfortran](https://command-not-found.com/gfortran) or [ifort](https://gist.github.com/SomajitDey/aeb6eb4c8083185e06800e1ece4be1bd) or [ifx](https://www.intel.com/content/www/us/en/developer/articles/guide/porting-guide-for-ifort-to-ifx.html). Note: ifort/ifx is free now, doesn't require a license anymore.
 - [fortdepend](https://github.com/ZedThree/fort_depend.py) or its [fork](https://github.com/PhyBi/fortdepend) for generating dependencies during build. For Ubuntu 18.04, you may also have to install *importlib-metadata* with: `pip3 install importlib.metadata`
 - [bash](https://command-not-found.com/bash) because we suck at writing fully POSIX-compliant shell scripts
 - [pv](https://command-not-found.com/pv) for showing real-time progress bar

@@ -13,8 +13,10 @@ program ccd_traj_to_xy
     integer :: pending_steps, current_step, rec_index, begin_rec, end_rec
     character(len=40) :: params_hash
     integer :: frame
-    character(len=*), parameter :: dump_fname_prefix = 'frame_', dump_fname_suffix = '.xy'
-    character(len=:), allocatable :: dump_dir, opt_arg
+    character(len=*), parameter :: dump_fname_prefix = '/frame_', dump_fname_suffix = '.xy'
+    character(len=:), allocatable :: opt_arg
+    ! Allocatable strings (in heap) are not shared by OMP threads in gfortran. So, making dump_dir of fixed size
+    character(len=256) :: dump_dir
     integer :: dump_dir_str_length, exitcode, opt_arg_len
 
     ! Following variables with trailing _ would be threadprivate
@@ -26,9 +28,7 @@ program ccd_traj_to_xy
     ! Get (and create, if needed) the dump directory
     call cmd_line_arg(1, length=dump_dir_str_length)
     if (dump_dir_str_length == 0) error stop 'Fatal: Pass a directory path as argument'
-    allocate (character(len=dump_dir_str_length) :: dump_dir)
     call cmd_line_arg(1, dump_dir)
-    dump_dir = dump_dir//'/'
     call execute_command_line('mkdir -p '//dump_dir, exitstat=exitcode)
     if (exitcode /= 0) error stop 'Fatal: Failed to create directory '//dump_dir
 
@@ -57,7 +57,7 @@ program ccd_traj_to_xy
     do rec_index = begin_rec, end_rec
         call threadsafe_traj_read_xy_only(rec_index, timepoint_, x_, y_)
         frame = rec_index*traj_dump_int
-        call gp_xy_dump(fname=dump_dir//dump_fname_prefix//int_to_char(frame)//dump_fname_suffix, &
+        call gp_xy_dump(fname=trim(dump_dir)//dump_fname_prefix//int_to_char(frame)//dump_fname_suffix, &
                         boxlen=box, x=x_, y=y_, title='Frame: '//int_to_char(frame))
         call log_this('Dumped #frame= '//int_to_char(frame))
     end do
